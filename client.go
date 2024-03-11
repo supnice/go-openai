@@ -89,7 +89,24 @@ func withBetaAssistantV1() requestOption {
 	}
 }
 
-func (c *Client) newRequest(ctx context.Context, method, url string, header http.Header, setters ...requestOption) (*http.Request, error) {
+func (c *Client) newRequest(ctx context.Context, method, url string, setters ...requestOption) (*http.Request, error) {
+	// Default Options
+	args := &requestOptions{
+		body:   nil,
+		header: make(http.Header),
+	}
+	for _, setter := range setters {
+		setter(args)
+	}
+	req, err := c.requestBuilder.Build(ctx, method, url, args.body, args.header)
+	if err != nil {
+		return nil, err
+	}
+	c.setCommonHeaders(req)
+	return req, nil
+}
+
+func (c *Client) newRequestForStream(ctx context.Context, method, url string, header http.Header, setters ...requestOption) (*http.Request, error) {
 	// Default Options
 	args := &requestOptions{
 		body: nil,
