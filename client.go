@@ -89,11 +89,12 @@ func withBetaAssistantV1() requestOption {
 	}
 }
 
-func (c *Client) newRequest(ctx context.Context, method, url string, setters ...requestOption) (*http.Request, error) {
+func (c *Client) newRequest(ctx context.Context, method, url string, header http.Header, setters ...requestOption) (*http.Request, error) {
 	// Default Options
 	args := &requestOptions{
-		body:   nil,
-		header: make(http.Header),
+		body: nil,
+		// header: make(http.Header),
+		header: header,
 	}
 	for _, setter := range setters {
 		setter(args)
